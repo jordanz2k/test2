@@ -1,6 +1,7 @@
 // import and instantiate express
 const express = require("express") // CommonJS import style!
 const app = express() // instantiate an Express object
+const cors= require('cors')  // Enable CORS for localhost API proxy access
 
 // import some useful middleware
 const bodyParser = require("body-parser") // middleware to help parse incoming HTTP POST data
@@ -18,6 +19,7 @@ const taskRouter = require("./task.model")
 //const Plan = mongoose.model("Plan");
 //<script type="module" src="../front-end/src/Home.js"></script>
 
+app.use(cors())
 
 // use the morgan middleware to log all incoming http requests
 app.use(morgan("dev")) // morgan has a few logging default styles - dev is a nice concise color-coded style
@@ -114,23 +116,32 @@ app.get("/tasks_api", (req, res, next) => {
     .catch(err => next(err)) 
 })
 
-app.get("/tasks_api/:id", async (req, res) => {
+app.get("/tasks_api/:id", (req, res, next) => {
   axios
-    .get(
-      'http://104.131.170.212:3333/posts/${req.params.id}'
-    )
+    .get("http://104.131.170.212:3333/posts", {
+      params: {
+        id: req.params.id
+      }
+
+    })
+    .then(apiResponse => res.json(apiResponse.data)) 
     .catch(err => next(err)) 
-  
-    const responseData = {
-      status: "wonderful",
-      message: `Imagine we got the data from the API for animal #${req.params.id}`,
-      animalId: req.params.id,
-      animal: apiResponse.data,
-    }
-
-    res.json(responseData)
-
 })
+
+app.get("/mytasks_scheduled", (req, res, next) => {
+  axios
+    .get("http://104.131.170.212:3333/mytasks_scheduled")
+    .then(apiResponse => res.json(apiResponse.data)) 
+    .catch(err => next(err)) 
+})
+
+app.get("/mytasks_completed", (req, res, next) => {
+  axios
+    .get("http://104.131.170.212:3333/mytasks_completed")
+    .then(apiResponse => res.json(apiResponse.data)) 
+    .catch(err => next(err)) 
+})
+
 
 
 // same route as above, but using environmental variables for secret credentials

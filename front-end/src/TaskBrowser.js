@@ -8,7 +8,7 @@ const TaskBrowser = (props) => {
 
   useEffect(() => {
 
-    axios.get('http://localhost:3000/tasks_api')
+    axios.get('http://localhost:3000/mytasks_scheduled')
       .then((response) => {
         console.log(response)
         setData(response.data)
@@ -33,7 +33,7 @@ const TaskBrowser = (props) => {
 
       <section className="main-content">
         <article className="task" key={data.id}>
-          <img alt={data.title} src={imgSrc} />
+      
           <div class="details">
             <id class="id">{data.taskId}</id> //added task id here 
             <address class="address">{data.country}</address>
